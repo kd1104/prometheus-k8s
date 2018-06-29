@@ -47,7 +47,7 @@ alertmanager:
 
   ## External URL which can access alertmanager
   ## Maybe same with Ingress host name
-  baseURL: "https://ms-nad.techmahindra.com/prometheus"
+  baseURL: "/"
 
   ## Additional alertmanager container environment variable
   ## For instance to add a http_proxy
@@ -757,43 +757,8 @@ alertmanagerFiles:
 ## Prometheus server ConfigMap entries
 ##
 serverFiles:
-  alerts:
-    groups:
-    - name: NodeAlerts
-      rules:
-      - alert: NodeCPUUsage
-        expr: (100 - (avg(irate(node_cpu{mode="idle"}[5m])) BY (instance) * 100)) > 75
-        for: 2m
-        labels:
-          severity: "CRITICAL"
-        annotations:
-          description: '{{$labels.instance}}: CPU usage is above 75% (current value is:
-            {{ $value }})'
-          summary: '{{$labels.instance}}: High CPU usage detect'
-      - alert: InstanceDown
-        expr: up == 0
-        for: 10s
-        labels:
-          serverity: "CRITICAL"
-        annotations:
-          summary: "Instance down"
-          description: "{{ $labels.group }}-{{$labels.instance}} - instance has been down for more than 10 minute."
-      - alert: mem_threshold_exceeded
-        expr: (node_memory_MemFree{job='node'} + node_memory_Cached{job='node'} + node_memory_Buffers{job='node'})/1000000 > 7000
-        for: 2m
-        labels:
-          serverity: "Critical"
-        annotations:
-          summary: "{{ $labels.group }}- {{ $labels.instance }} High memory usage detected"
-          description: "This device's memory usage has exceeded the threshold with a value of {{ $value }}."
-      - alert: filesystem_threshold_exceeded
-        expr: 100 *(1 - (node_filesystem_free{mountpoint="/"}  / node_filesystem_size{ mountpoint="/"}) ) > 80
-        labels:
-          serverity: "Critical"
-        annotations:
-          summary: "{{ $labels.group }}-{{ $labels.instance }} High filesystem usage is detected"
-          description: "This device's filesystem usage has exceeded the threshold with a value of {{ $value }}."
- 
+  alerts: {}
+  rules: {}
 
   prometheus.yml:
     rule_files:
@@ -1007,7 +972,7 @@ serverFiles:
           - source_labels: [__address__]
             target_label: __param_target
           - target_label: __address__
-            replacement: 10.233.52.79:9115
+            replacement: blackbox
           - source_labels: [__param_target]
             target_label: instance
           - action: labelmap
@@ -1051,68 +1016,6 @@ serverFiles:
           - source_labels: [__meta_kubernetes_pod_name]
             action: replace
             target_label: kubernetes_pod_name
-       
-      - job_name: 'kubernetes-ingresses'
-        scrape_timeout: 15s
-
-        metrics_path: /probe
-        params:
-          module: [http_2xx]
-
-        kubernetes_sd_configs:
-        - role: ingress
-
-        relabel_configs:
-  # Example relabel to probe only some ingresses that have "example.io/should_be_probed = true" annotation
-  #  - source_labels: [__meta_kubernetes_ingress_annotation_example_io_should_be_probed]
-  #    action: keep
-  #    regex: true
-          - source_labels: [__meta_kubernetes_ingress_scheme,__address__,__meta_kubernetes_ingress_path]
-            regex: (.+);(.+);(.+)
-            replacement: https://${2}${3}
-            target_label: __param_target
-          - target_label: __address__
-            replacement: 192.168.0.40:9115
-          - source_labels: [__param_target]
-            target_label: instance
-          - action: labelmap
-            regex: __meta_kubernetes_ingress_label_(.+)
-          - source_labels: [__meta_kubernetes_namespace]
-            target_label: kubernetes_namespace
-          - source_labels: [__meta_kubernetes_ingress_name]
-            target_label: kubernetes_name
-
-
-
-#        static_configs:
-#          - targets:
-#            - https://ms-nad.techmahindra.com/jira
-#            - https://ms-nad.techmahindra.com/git
-#            - https://ms-nad.techmahindra.com/caas
-#            - https://ms-nad.techmahindra.com/cardstatus
-#            - https://ms-nad.techmahindra.com/webapp
-#            - https://ms-nad.techmahindra.com/meps
-#            - https://ms-nad.techmahindra.com/kibana
-#            - https://ms-nad.techmahindra.com/prometheus
-#            - https://ms-nad.techmahindra.com/chatbot
-#            - https://ms-nad.techmahindra.com/jenkins
-#            - https://ms-nad.techmahindra.com/notification
-#            - https://ms-nad.techmahindra.com/uaas
-#            - https://ms-nad.techmahindra.com/user
-#        relabel_configs:
-#          - source_labels: [__address__]
-#            regex: (.*)(:80)?
-#            target_label: __param_target
-#            replacement: ${1}
-#          - source_labels: [__param_target]
-#            regex: (.*)
-#            target_label: instance
-#            replacement: ${1}
-#          - source_labels: []
-#            regex: .*
-#            target_label: __address__
-#            replacement: 192.168.0.40:9115 
-
 
 networkPolicy:
   ## Enable creation of NetworkPolicy resources.
