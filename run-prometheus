@@ -4,3 +4,13 @@ To install prometheus
 
 To delete release
 # helm del --purge prometheus 
+
+For blackbox exporter
+# Install blackbox exporter on master by using following steps:
+
+1. # wget https://github.com/prometheus/blackbox_exporter/releases/download/v0.12.0/blackbox_exporter-0.12.0.linux-amd64.tar.gz
+2. # gunz=x-amd64.tar.gz
+3. tar -xvf blackbox_exporter-0.12.0.linux-amd64.tar
+4. cp blackbox_exporter-0.12.0.linux-amd64/blackbox_exporter /usr/local/bin
+5. blackbox_exporter --config.file=blackbox.yml & 
+
