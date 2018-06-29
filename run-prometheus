@@ -1,0 +1,6 @@
+To install prometheus
+# helm install -f values.yaml stable/prometheus --name prometheus --namespace prometheus
+
+
+To delete release
+# helm del --purge prometheus 
