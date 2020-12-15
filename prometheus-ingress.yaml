@@ -13,7 +13,7 @@ metadata:
 
 spec:
   rules:
-  - host: ms-nad.techmahindra.com
+  - host:
     http:
       paths:
       - backend:
@@ -23,4 +23,4 @@ spec:
 status:
  loadBalancer:
    ingress:
-   - hostname: af749da241be611e8b7750aa268d562e-1486868581.ap-south-1.elb.amazonaws.com
+   - hostname: 
