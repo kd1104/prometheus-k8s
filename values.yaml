@@ -447,7 +447,7 @@ server:
 
   ## External URL which can access alertmanager
   ## Maybe same with Ingress host name
-  baseURL: "https://ms-nad.techmahindra.com/prometheus"
+  baseURL: ""
 
   ## This flag controls access to the administrative HTTP API which includes functionality such as deleting time
   ## series. This is disabled by default.
